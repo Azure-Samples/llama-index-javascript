@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: llama-index-nextjs
+metadata:
+    template: azd-init@1.9.3
+services:
+    llama-index-nextjs:
+        project: .
+        host: containerapp
+        language: js
+        docker:
+            path: Dockerfile

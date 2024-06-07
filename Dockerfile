@@ -9,6 +9,7 @@ RUN npm install
 # Build the application
 COPY . .
 RUN npm run build
+RUN npm run generate
 
 # ====================================
 FROM build as release
