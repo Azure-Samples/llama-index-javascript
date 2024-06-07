@@ -11,6 +11,9 @@
     "generate": "tsx app/api/chat/engine/generate.ts"
   },
   "dependencies": {
+    "@azure/identity": "^4.2.0",
+    "@e2b/code-interpreter": "^0.0.5",
+    "@llamaindex/pdf-viewer": "^1.1.1",
     "@radix-ui/react-collapsible": "^1.0.3",
     "@radix-ui/react-hover-card": "^1.0.7",
     "@radix-ui/react-slot": "^1.0.2",
@@ -27,16 +30,14 @@
     "react-dom": "^18.2.0",
     "react-markdown": "^8.0.7",
     "react-syntax-highlighter": "^15.5.0",
+    "rehype-katex": "^7.0.0",
     "remark": "^14.0.3",
     "remark-code-import": "^1.2.0",
     "remark-gfm": "^3.0.1",
     "remark-math": "^5.1.1",
-    "rehype-katex": "^7.0.0",
     "supports-color": "^8.1.1",
     "tailwind-merge": "^2.1.0",
-    "vaul": "^0.9.1",
-    "@llamaindex/pdf-viewer": "^1.1.1",
-    "@e2b/code-interpreter": "^0.0.5"
+    "vaul": "^0.9.1"
   },
   "devDependencies": {
     "@types/node": "^20.10.3",

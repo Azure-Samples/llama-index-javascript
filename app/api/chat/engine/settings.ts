@@ -8,6 +8,9 @@ import {
   OpenAIEmbedding,
   Settings,
 } from "llamaindex";
+import {AzureOpenAI} from "openai";
+
+import { DefaultAzureCredential, getBearerTokenProvider } from "@azure/identity";
 import { HuggingFaceEmbedding } from "llamaindex/embeddings/HuggingFaceEmbedding";
 import { OllamaEmbedding } from "llamaindex/embeddings/OllamaEmbedding";
 import { ALL_AVAILABLE_ANTHROPIC_MODELS } from "llamaindex/llm/anthropic";
@@ -34,6 +37,9 @@ export const initSettings = async () => {
     case "gemini":
       initGemini();
       break;
+    case "azureopenai":
+      initAzureOpenAI();
+      break;
     default:
       initOpenAI();
       break;
@@ -47,6 +53,21 @@ function initOpenAI() {
     model: process.env.MODEL ?? "gpt-3.5-turbo",
     maxTokens: 512,
   });
+  Settings.embedModel = new OpenAIEmbedding({
+    model: process.env.EMBEDDING_MODEL,
+    dimensions: process.env.EMBEDDING_DIM
+      ? parseInt(process.env.EMBEDDING_DIM)
+      : undefined,
+  });
+}
+
+function initAzureOpenAI() {
+  const credential = new DefaultAzureCredential();
+  const azureADTokenProvider = getBearerTokenProvider(credential, "https://cognitiveservices.azure.com/.default");
+  Settings.llm = new AzureOpenAI({
+    azureADTokenProvider,
+    deployment: process.env.MODEL ?? "gpt-35-turbo",
+  }) as any;
   Settings.embedModel = new OpenAIEmbedding({
     model: process.env.EMBEDDING_MODEL,
     dimensions: process.env.EMBEDDING_DIM
