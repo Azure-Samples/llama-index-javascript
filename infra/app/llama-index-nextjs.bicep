@@ -49,6 +49,18 @@ resource acrPullRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   }
 }
 
+// System roles
+module openAiRole '../shared/role.bicep' = {
+  scope: resourceGroup()
+  name: guid(subscription().id, resourceGroup().id, identity.id, 'openaiUserRole')
+  params: {
+    principalId: app.identity.principalId
+    // Cognitive Services OpenAI User
+    roleDefinitionId: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
+    principalType: 'ServicePrincipal'
+  }
+}
+
 module fetchLatestImage '../modules/fetch-container-image.bicep' = {
   name: '${name}-fetch-image'
   params: {
@@ -63,7 +75,7 @@ resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
   tags: union(tags, {'azd-service-name':  'llama-index-nextjs' })
   dependsOn: [ acrPullRole ]
   identity: {
-    type: 'UserAssigned'
+    type: 'SystemAssigned,UserAssigned'
     userAssignedIdentities: { '${identity.id}': {} }
   }
   properties: {
