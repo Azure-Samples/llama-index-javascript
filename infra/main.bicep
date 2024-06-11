@@ -23,22 +23,24 @@ param openAiApiVersion string // Set in main.parameters.json
 
 var finalOpenAiUrl = empty(openAiUrl) ? 'https://${openAi.outputs.name}.openai.azure.com' : openAiUrl
 
-var azureOpenAIConfig = {
-  modelName: 'gpt-35-turbo'
-  deploymentName: 'gpt-35-turbo'
-  deploymentVersion: '1106'
-  deploymentCapacity: 10
-}
-
 var llamaIndexConfig = {
+  chat: {
+    model: 'gpt-35-turbo'
+    deployment: 'gpt-35-turbo'
+    version: '1106'
+    capacity: '10'
+  }
+  embedding: {
+    model: 'text-embedding-3-large'
+    deployment: 'text-embedding-3-large'
+    dim: '1024'
+    capacity: '10'
+  }
   model_provider: 'openai'
-  model: 'gpt-35-turbo' // openai: gpt-35-turbo | azureopenai: gpt-35-turbo
-  embedding_model: 'text-embedding-3-large'
-  embedding_dim: 1024
   openai_api_key: ''
   llm_temperature: '0.7'
-  llm_max_tokens: 100
-  top_k: 3
+  llm_max_tokens: '100'
+  top_k: '3'
   fileserver_url_prefix: 'http://localhost/api/files'
   system_prompt: 'You are a helpful assistant who helps users with their questions.'
 }
@@ -129,16 +131,24 @@ module openAi './shared/cognitiveservices.bicep' = if (empty(openAiUrl)) {
     disableLocalAuth: true
     deployments: [
       {
-        name: azureOpenAIConfig.deploymentName
+        name: llamaIndexConfig.chat.deployment
         model: {
           format: 'OpenAI'
-          name: azureOpenAIConfig.modelName
-          version: azureOpenAIConfig.deploymentVersion
+          name: llamaIndexConfig.chat.model
+          version: llamaIndexConfig.chat.version
         }
         sku: {
           name: 'Standard'
-          capacity: azureOpenAIConfig.deploymentCapacity
+          capacity: llamaIndexConfig.chat.capacity
         }
+      }
+      {
+        name: llamaIndexConfig.embedding.model
+        model: {
+          format: 'OpenAI'
+          name: llamaIndexConfig.embedding.deployment
+        }
+        capacity: llamaIndexConfig.embedding.capacity
       }
     ]
   }
@@ -152,21 +162,9 @@ module openAiRoleUser './shared/role.bicep' = {
   name: 'openai-role-user'
   params: {
     principalId: principalId
-    // Cognitive Services OpenAI Contributor
-    roleDefinitionId: 'a001fd3d-188f-4b5d-821b-7da978bf7442'
+    // Cognitive Services OpenAI User
+    roleDefinitionId: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
     principalType: 'User'
-  }
-}
-
-// System roles
-module openAiRoleApi './shared/role.bicep' = {
-  scope: rg
-  name: 'openai-role-api'
-  params: {
-    principalId: openAi.outputs.identityPrincipalId
-    // Cognitive Services OpenAI Contributor
-    roleDefinitionId: 'a001fd3d-188f-4b5d-821b-7da978bf7442'
-    principalType: 'ServicePrincipal'
   }
 }
 
@@ -182,23 +180,64 @@ module llamaIndexNextjs './app/llama-index-nextjs.bicep' = {
     containerRegistryName: registry.outputs.name
     exists: llamaIndexNextjsExists
     appDefinition: union(llamaIndexNextjsDefinition, {
-      AZURE_KEY_VAULT_NAME: keyVault.outputs.name
-      AZURE_KEY_VAULT_ENDPOINT: keyVault.outputs.endpoint
-
-      AZURE_OPENAI_ENDPOINT: finalOpenAiUrl
-      AZURE_DEPLOYMENT_NAME: azureOpenAIConfig.deploymentName
-      OPENAI_API_VERSION: openAiApiVersion
-
-      MODEL_PROVIDER: llamaIndexConfig.model_provider
-      MODEL: llamaIndexConfig.model
-      EMBEDDING_MODEL: llamaIndexConfig.embedding_model
-      EMBEDDING_DIM: llamaIndexConfig.embedding_dim
-      OPENAI_API_KEY: llamaIndexConfig.openai_api_key
-      LLM_TEMPERATURE: llamaIndexConfig.llm_temperature
-      LLM_MAX_TOKENS: llamaIndexConfig.llm_max_tokens
-      TOP_K: llamaIndexConfig.top_k
-      FILESERVER_URL_PREFIX: llamaIndexConfig.fileserver_url_prefix
-      SYSTEM_PROMPT: llamaIndexConfig.system_prompt
+      settings: [
+        {
+          name: 'AZURE_KEY_VAULT_NAME' 
+          value: keyVault.outputs.name
+        }
+        {
+          name: 'AZURE_KEY_VAULT_ENDPOINT' 
+          value: keyVault.outputs.endpoint
+        }
+        {
+          name: 'AZURE_OPENAI_ENDPOINT' 
+          value: finalOpenAiUrl
+        }
+        {
+          name: 'AZURE_DEPLOYMENT_NAME' 
+          value: llamaIndexConfig.chat.deployment
+        }
+        {
+          name: 'OPENAI_API_VERSION' 
+          value: openAiApiVersion
+        }
+        {
+          name: 'MODEL_PROVIDER' 
+          value: llamaIndexConfig.model_provider
+        }
+        {
+          name: 'MODEL' 
+          value: llamaIndexConfig.chat.model
+        }
+        {
+          name: 'EMBEDDING_MODEL' 
+          value: llamaIndexConfig.embedding.model
+        }
+        {
+          name: 'EMBEDDING_DIM' 
+          value: llamaIndexConfig.embedding.dim
+        }
+        {
+          name: 'LLM_TEMPERATURE' 
+          value: llamaIndexConfig.llm_temperature
+        }
+        {
+          name: 'LLM_MAX_TOKENS' 
+          value: llamaIndexConfig.llm_max_tokens
+        }
+        {
+          name: 'TOP_K' 
+          value: llamaIndexConfig.top_k
+        }
+        {
+          name: 'FILESERVER_URL_PREFIX' 
+          value: llamaIndexConfig.fileserver_url_prefix
+        }
+        {
+          name: 'SYSTEM_PROMPT' 
+          value: llamaIndexConfig.system_prompt
+        }
+      ]
     })
   }
   scope: rg
@@ -209,17 +248,17 @@ output AZURE_KEY_VAULT_NAME string = keyVault.outputs.name
 output AZURE_KEY_VAULT_ENDPOINT string = keyVault.outputs.endpoint
 
 output AZURE_OPENAI_ENDPOINT string = finalOpenAiUrl
-output AZURE_DEPLOYMENT_NAME string = azureOpenAIConfig.deploymentName
+output AZURE_DEPLOYMENT_NAME string = llamaIndexConfig.chat.deployment
 output OPENAI_API_VERSION string = openAiApiVersion
 
 //  LlamaIndex configuration
 output MODEL_PROVIDER string = llamaIndexConfig.model_provider
-output MODEL string = llamaIndexConfig.model
-output EMBEDDING_MODEL string = llamaIndexConfig.embedding_model
-output EMBEDDING_DIM int = llamaIndexConfig.embedding_dim
+output MODEL string = llamaIndexConfig.chat.model
+output EMBEDDING_MODEL string = llamaIndexConfig.embedding.model
+output EMBEDDING_DIM string = llamaIndexConfig.embedding.dim
 output OPENAI_API_KEY string = llamaIndexConfig.openai_api_key
 output LLM_TEMPERATURE string = llamaIndexConfig.llm_temperature
-output LLM_MAX_TOKENS int = llamaIndexConfig.llm_max_tokens
-output TOP_K int = llamaIndexConfig.top_k
+output LLM_MAX_TOKENS string = llamaIndexConfig.llm_max_tokens
+output TOP_K string = llamaIndexConfig.top_k
 output FILESERVER_URL_PREFIX string = llamaIndexConfig.fileserver_url_prefix
 output SYSTEM_PROMPT string = llamaIndexConfig.system_prompt
