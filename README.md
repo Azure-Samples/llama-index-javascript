@@ -3,13 +3,19 @@
 # Serverless Azure OpenAI Quick Start with LlamaIndex (JavaScript)
 
 [![Open project in GitHub Codespaces](https://img.shields.io/badge/Codespaces-Open-blue?style=flat-square&logo=github)](https://codespaces.new/Azure-Samples/llama-index-javascript?hide_repo_select=true&ref=main&quickstart=true)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/Azure-Samples/llama-index-javascript/build.yaml?style=flat-square&label=Build)](https://github.com/Azure-Samples/llama-index-javascript/actions)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/Azure-Samples/llama-index-javascript/build-test.yaml?style=flat-square&label=Build)](https://github.com/Azure-Samples/llama-index-javascript/actions)
 ![Node version](https://img.shields.io/badge/Node.js->=20-3c873a?style=flat-square)
-[![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-pink?style=flat-square)](LICENSE)
 
 :star: Like and fork this sample to receive lastest changes and updates!
 
-[Overview](#overview) • [Get started](#get-started) • [Run the sample](#run-the-sample) • [Resources](#resources)
+[![Getting Started](https://img.shields.io/badge/Getting%20Started-blue?style=flat-square)](#get-started)
+[![Run the sample locally](https://img.shields.io/badge/Run%20the%20sample%20locally-blue?style=flat-square)](#run-the-sample-locally-with-azure-openai-models)
+[![Deploy to Azure](https://img.shields.io/badge/Deploy%20to%20Azure-blue?style=flat-square&logo=microsoft-azure)](#deploy-the-sample-to-azure)
+[![Troubleshooting](https://img.shields.io/badge/Troubleshooting-blue?style=flat-square)](#troubleshooting)
+[![Cost estimation](https://img.shields.io/badge/Cost%20estimation-blue?style=flat-square)](./docs/cost.md)
+[![Contributing](https://img.shields.io/badge/Contributing-blue?style=flat-square)](#contributing)
+[![Resources](https://img.shields.io/badge/Resources-blue?style=flat-square)](#resources)
 
   <img src="./docs/llama-index-javascript.png" alt="Screenshot showing the LlamaIndex app in action" width="640px" />
 
