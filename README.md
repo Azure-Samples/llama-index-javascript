@@ -32,7 +32,9 @@ This project demonstrates how to build a simple LlamaIndex application using Azu
 
 ## Architecture Diagram
 
-TODO: Add architecture diagram
+<div align="center">
+  <img src="./docs/architecture-diagram-llama-index-javascript.png" alt="Screenshot showing the chatgpt app high level diagram" width="640px" />
+</div>
 
 This application is built around a single component:
 
