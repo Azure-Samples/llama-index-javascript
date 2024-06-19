@@ -2,7 +2,7 @@
 
 name: llama-index-nextjs
 metadata:
-    template: azd-init@1.9.3
+    template: llama-index-javascript
 services:
     llama-index-nextjs:
         project: .
