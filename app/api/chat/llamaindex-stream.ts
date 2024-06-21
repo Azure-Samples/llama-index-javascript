@@ -5,19 +5,19 @@ import {
   trimStartOfStreamHelper,
   type AIStreamCallbacksAndOptions,
 } from "ai";
+
 import {
   Metadata,
   NodeWithScore,
-  Response,
+  EngineResponse,
   ToolCallLLMMessageOptions,
 } from "llamaindex";
 
-import { AgentStreamChatResponse } from "llamaindex/agent/base";
 import { appendImageData, appendSourceData } from "./stream-helper";
 
 type LlamaIndexResponse =
-  | AgentStreamChatResponse<ToolCallLLMMessageOptions>
-  | Response;
+  | ReadableStream<ToolCallLLMMessageOptions> 
+  | EngineResponse;
 
 type ParserOptions = {
   image_url?: string;
@@ -48,16 +48,13 @@ function createParser(
       }
 
       let delta;
-      if (value instanceof Response) {
+      if (value instanceof EngineResponse) {
         // handle Response type
         if (value.sourceNodes) {
           // get source nodes from the first response
           sourceNodes = value.sourceNodes;
         }
         delta = value.response ?? "";
-      } else {
-        // handle other types
-        delta = value.response.delta;
       }
       const text = trimStartOfStream(delta ?? "");
       if (text) {
