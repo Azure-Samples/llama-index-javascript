@@ -1,5 +1,5 @@
 {
-  "name": "azd",
+  "name": "llama-index-javascript",
   "version": "0.1.0",
   "scripts": {
     "format": "prettier --ignore-unknown --cache --check .",
