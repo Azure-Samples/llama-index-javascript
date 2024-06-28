@@ -16,12 +16,12 @@ export const initSettings = async () => {
   console.log(`Using '${process.env.MODEL_PROVIDER}' model provider`);
 
   // if provider is OpenAI, MODEL must be set
-  if (process.env.MODEL_PROVIDER === 'openai' && process.env.OPENAI_API_TYPE !== 'azure' && !process.env.MODEL) {
+  if (process.env.MODEL_PROVIDER === 'openai' && process.env.OPENAI_API_TYPE !== 'AzureOpenAI' && !process.env.MODEL) {
     throw new Error("'MODEL' env variable must be set.");
   }
 
   // if provider is Azure OpenAI, AZURE_DEPLOYMENT_NAME must be set
-  if (process.env.MODEL_PROVIDER === 'openai' && process.env.OPENAI_API_TYPE === 'azure' && !process.env.AZURE_DEPLOYMENT_NAME) {
+  if (process.env.MODEL_PROVIDER === 'openai' && process.env.OPENAI_API_TYPE === 'AzureOpenAI' && !process.env.AZURE_DEPLOYMENT_NAME) {
     throw new Error("'AZURE_DEPLOYMENT_NAME' env variables must be set.");
   }
 
@@ -34,7 +34,7 @@ export const initSettings = async () => {
       initOllama();
       break;
     case "openai":
-      if (process.env.OPENAI_API_TYPE === "azure") {
+      if (process.env.OPENAI_API_TYPE === "AzureOpenAI") {
         await initAzureOpenAI();
       } else {
         initOpenAI();

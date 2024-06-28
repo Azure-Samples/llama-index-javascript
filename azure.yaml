@@ -16,3 +16,11 @@ services:
             continueOnError: false
             interactive: false
             run: npm run generate
+hooks:
+  postprovision:
+    windows:
+      shell: pwsh
+      run: azd env get-values > .env
+    posix:
+      shell: sh
+      run: azd env get-values > .env
