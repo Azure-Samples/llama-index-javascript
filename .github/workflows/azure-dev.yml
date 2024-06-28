@@ -6,7 +6,6 @@ on:
       # Set this to the mainline branch you are using
       branches:
         - main
-        - master
 
     # GitHub Actions workflow to deploy to Azure using azd
     # To configure required secrets for connecting to Azure, simply run `azd pipeline config`
@@ -58,6 +57,14 @@ jobs:
 
             - name: Provision Infrastructure
               run: azd provision --no-prompt
+              env:
+                AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
+                AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
+                AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
             - name: Deploy Application
               run: azd deploy --no-prompt
+              env:
+                AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
+                AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
+                AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
