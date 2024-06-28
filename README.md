@@ -116,6 +116,7 @@ Open the URL `http://localhost:3000` in your browser to interact with the bot.
 
 You need to install following tools to work on your local machine:
 
+- [Docker](https://docs.docker.com/get-docker)
 - [Node.js LTS](https://nodejs.org/download/)
 - [Azure Developer CLI](https://aka.ms/azure-dev/install)
 - [Git](https://git-scm.com/downloads)
