@@ -9,6 +9,9 @@ param environmentName string
 @description('Primary location for all resources')
 param location string
 
+@description('Whether the deployment is running on GitHub Actions')
+param runningOnGh string = ''
+
 param llamaIndexNextjsExists bool
 @secure()
 param llamaIndexNextjsDefinition object
@@ -154,26 +157,13 @@ module openAi './shared/cognitiveservices.bicep' = if (empty(openAiUrl)) {
   }
 }
 
-// Roles
-
-// User roles
-module openAiRoleUser './shared/role.bicep' = {
-  scope: rg
-  name: 'openai-role-user'
-  params: {
-    principalId: principalId
-    // Cognitive Services OpenAI User
-    roleDefinitionId: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
-    principalType: 'User'
-  }
-}
-
 module llamaIndexNextjs './app/llama-index-nextjs.bicep' = {
   name: 'llama-index-nextjs'
   params: {
     name: '${abbrs.appContainerApps}llama-index-${resourceToken}'
     location: location
     tags: tags
+    runningOnGh: runningOnGh
     identityName: '${abbrs.managedIdentityUserAssignedIdentities}llama-index-${resourceToken}'
     applicationInsightsName: monitoring.outputs.applicationInsightsName
     containerAppsEnvironmentName: appsEnv.outputs.name
@@ -236,6 +226,10 @@ module llamaIndexNextjs './app/llama-index-nextjs.bicep' = {
         {
           name: 'SYSTEM_PROMPT' 
           value: llamaIndexConfig.system_prompt
+        }
+        {
+          name: 'OPENAI_API_TYPE'
+          value: 'AzureOpenAI'
         }
       ]
     })

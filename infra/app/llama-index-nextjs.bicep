@@ -7,6 +7,13 @@ param containerRegistryName string
 param containerAppsEnvironmentName string
 param applicationInsightsName string
 param exists bool
+
+@description('Whether the deployment is running on GitHub Actions')
+param runningOnGh string = ''
+
+@description('Id of the user or app to assign application roles')
+param principalId string = ''
+
 @secure()
 param appDefinition object
 
@@ -42,17 +49,31 @@ resource acrPullRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   scope: containerRegistry
   name: guid(subscription().id, resourceGroup().id, identity.id, 'acrPullRole')
   properties: {
-    roleDefinitionId:  subscriptionResourceId(
-      'Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')
-    principalType: 'ServicePrincipal'
     principalId: identity.properties.principalId
+    roleDefinitionId: '7f951dda-4ed3-4680-a7ca-43fe172d538d'
+    principalType: 'ServicePrincipal'
+  }
+}
+
+
+// Roles
+
+// User roles
+module openAiRoleUser '../shared/role.bicep' = if (empty(runningOnGh)) {
+  scope: resourceGroup()
+  name: guid(subscription().id, resourceGroup().id, identity.id, 'openaiUserRole')
+  params: {
+    principalId: principalId
+    // Cognitive Services OpenAI User
+    roleDefinitionId: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
+    principalType: 'User'
   }
 }
 
 // System roles
-module openAiRole '../shared/role.bicep' = {
+module openAiRoleBackend '../shared/role.bicep' = {
   scope: resourceGroup()
-  name: guid(subscription().id, resourceGroup().id, identity.id, 'openaiUserRole')
+  name: guid(subscription().id, resourceGroup().id, identity.id, 'openaiServicePrincipalRole')
   params: {
     principalId: app.identity.principalId
     // Cognitive Services OpenAI User

@@ -25,8 +25,8 @@
     "openAiApiVersion": {
       "value": "${AZURE_OPENAI_API_VERSION=2024-02-15-preview}"
     },
-    "isContinuousDeployment": {
-      "value": "${CI=false}"
+    "runningOnGh": {
+      "value": "${GITHUB_ACTIONS}"
     },
     "azureDeploymentName": {
       "value": "${AZURE_DEPLOYMENT_NAME=gpt-35-turbo}"
