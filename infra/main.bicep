@@ -169,6 +169,7 @@ module llamaIndexNextjs './app/llama-index-nextjs.bicep' = {
     containerAppsEnvironmentName: appsEnv.outputs.name
     containerRegistryName: registry.outputs.name
     exists: llamaIndexNextjsExists
+    principalId: principalId
     appDefinition: union(llamaIndexNextjsDefinition, {
       settings: [
         {

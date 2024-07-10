@@ -33,10 +33,6 @@ resource identity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' 
   location: location
 }
 
-resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-01-01-preview' existing = {
-  name: containerRegistryName
-}
-
 resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' existing = {
   name: containerAppsEnvironmentName
 }
@@ -45,22 +41,10 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing
   name: applicationInsightsName
 }
 
-resource acrPullRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  scope: containerRegistry
-  name: guid(subscription().id, resourceGroup().id, identity.id, 'acrPullRole')
-  properties: {
-    principalId: identity.properties.principalId
-    roleDefinitionId: '7f951dda-4ed3-4680-a7ca-43fe172d538d'
-    principalType: 'ServicePrincipal'
-  }
-}
-
-
 // Roles
 
 // User roles
 module openAiRoleUser '../shared/role.bicep' = if (empty(runningOnGh)) {
-  scope: resourceGroup()
   name: guid(subscription().id, resourceGroup().id, identity.id, 'openaiUserRole')
   params: {
     principalId: principalId
@@ -72,12 +56,19 @@ module openAiRoleUser '../shared/role.bicep' = if (empty(runningOnGh)) {
 
 // System roles
 module openAiRoleBackend '../shared/role.bicep' = {
-  scope: resourceGroup()
   name: guid(subscription().id, resourceGroup().id, identity.id, 'openaiServicePrincipalRole')
   params: {
     principalId: app.identity.principalId
     // Cognitive Services OpenAI User
     roleDefinitionId: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
+    principalType: 'ServicePrincipal'
+  }
+}
+module acrPullRole '../shared/role.bicep' = {
+  name: guid(subscription().id, resourceGroup().id, identity.id, 'acrPullRole')
+  params: {
+    principalId: identity.properties.principalId
+    roleDefinitionId: '7f951dda-4ed3-4680-a7ca-43fe172d538d'
     principalType: 'ServicePrincipal'
   }
 }
