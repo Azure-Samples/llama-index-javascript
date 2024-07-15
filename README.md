@@ -60,7 +60,7 @@ You can run this template virtually by using GitHub Codespaces. The button will 
 3. Sign into your Azure account:
 
     ```shell
-     azd auth login --use-device-code
+     azd auth login
     ```
 4. Provision the Azure resources and deploy your code:
 
