@@ -10,12 +10,12 @@ services:
         language: js
         docker:
             path: Dockerfile
-        hooks:
-          predeploy:
-            shell: sh
-            continueOnError: false
-            interactive: false
-            run: npm run generate
+        # hooks:
+        #   predeploy:
+        #     shell: sh
+        #     continueOnError: false
+        #     interactive: false
+        #     run: npm run generate
 hooks:
   postprovision:
     windows:
