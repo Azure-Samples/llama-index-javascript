@@ -7,7 +7,7 @@
 ![Node version](https://img.shields.io/badge/Node.js->=20-3c873a?style=flat-square)
 [![License](https://img.shields.io/badge/License-MIT-pink?style=flat-square)](LICENSE)
 
-This sample shows how to quickly get started with [LlamaIndex.ai](https://www.llamaindex.ai/) on Azure. The application is hosted on [Azure Container Apps](https://learn.microsoft.com/azure/container-apps/). You can use it as a starting point for building more complex RAG applications.
+This sample shows how to quickly get started with [LlamaIndex for TypeScript](https://ts.llamaindex.ai/) on Azure. The application is hosted on [Azure Container Apps](https://learn.microsoft.com/azure/container-apps/). You can use it as a starting point for building more complex RAG applications.
 
 (Like and fork this sample to receive lastest changes and updates)
 
