@@ -1,0 +1,31 @@
+name: Validate AZD template
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "infra/**"
+  pull_request:
+    branches: [ main ]
+    paths:
+      - "infra/**"
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Microsoft Security DevOps Analysis
+        uses: microsoft/security-devops-action@v1
+        id: msdo
+        continue-on-error: true
+        with:
+          tools: templateanalyzer
+
+      - name: Upload alerts to Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        if: github.repository == 'Azure-Samples/chat-rag-openai-csharp-prompty'
+        with:
+          sarif_file: ${{ steps.msdo.outputs.sarifFile }}
