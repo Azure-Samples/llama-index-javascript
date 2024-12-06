@@ -1,3 +1,22 @@
+<!--
+---
+name: Serverless Azure OpenAI Quick Start with LlamaIndex (JavaScript)
+description: Build a simple RAG app with LlamaIndex and Azure OpenAI, deployed on Azure Container Apps
+languages:
+- javascript
+- typescript
+- nodejs
+- bicep
+- azdeveloper
+products:
+- azure-openai
+- azure-container-apps
+- azure
+page_type: sample
+urlFragment: llama-index-javascript
+---
+-->
+
 <div align="center">
 
 # Serverless Azure OpenAI Quick Start with LlamaIndex <br> (JavaScript)
