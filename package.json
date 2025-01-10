@@ -13,7 +13,7 @@
   "dependencies": {
     "@azure/identity": "^4.2.0",
     "@e2b/code-interpreter": "^0.0.5",
-    "@llamaindex/pdf-viewer": "^1.1.1",
+    "@llamaindex/pdf-viewer": "^1.2.0",
     "@radix-ui/react-collapsible": "^1.0.3",
     "@radix-ui/react-hover-card": "^1.0.7",
     "@radix-ui/react-slot": "^1.0.2",
