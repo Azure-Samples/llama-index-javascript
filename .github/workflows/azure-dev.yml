@@ -35,7 +35,7 @@ jobs:
                 node-version: 20
             
             - name: Install azd
-              uses: Azure/setup-azd@v1.0.0
+              uses: Azure/setup-azd@v2
 
             - name: Log in with Azure (Federated Credentials)
               if: ${{ env.AZURE_CLIENT_ID != '' }}
