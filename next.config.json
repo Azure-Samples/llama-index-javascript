@@ -1,13 +1,18 @@
 {
-  "experimental": {
-    "outputFileTracingIncludes": {
-      "/*": [
-        "./cache/**/*"
-      ]
-    },
-    "serverComponentsExternalPackages": [
-      "sharp",
-      "onnxruntime-node"
+  "outputFileTracingIncludes": {
+    "/*": [
+      "./cache/**/*"
     ]
-  }
+  },
+  "outputFileTracingExcludes": {
+    "/api/files/*": [
+      ".next/**/*",
+      "node_modules/**/*",
+      "public/**/*",
+      "app/**/*"
+    ]
+  },
+  "transpilePackages": [
+    "highlight.js"
+  ]
 }

@@ -232,6 +232,10 @@ module llamaIndexNextjs './app/llama-index-nextjs.bicep' = {
           name: 'OPENAI_API_TYPE'
           value: 'AzureOpenAI'
         }
+        {
+          name: 'STORAGE_CACHE_DIR'
+          value: './cache'
+        }
       ]
     })
   }
@@ -258,3 +262,4 @@ output TOP_K string = llamaIndexConfig.top_k
 output FILESERVER_URL_PREFIX string = llamaIndexConfig.fileserver_url_prefix
 output SYSTEM_PROMPT string = llamaIndexConfig.system_prompt
 output OPENAI_API_TYPE string = 'AzureOpenAI'
+output STORAGE_CACHE_DIR string = './cache'

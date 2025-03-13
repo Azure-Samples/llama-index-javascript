@@ -74,8 +74,11 @@
   * {
     @apply border-border;
   }
+  html {
+    @apply h-full;
+  }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground h-full;
     font-feature-settings:
       "rlig" 1,
       "calt" 1;
@@ -90,5 +93,34 @@
       radial-gradient(at 85% 0, hsla(46, 57%, 78%, 0.52) 0, transparent 50%),
       radial-gradient(at 91% 36%, rgba(194, 213, 255, 0.68) 0, transparent 50%),
       radial-gradient(at 8% 40%, rgba(251, 218, 239, 0.46) 0, transparent 50%);
+  }
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  .fadein-agent {
+    animation-name: fadeIn;
+    animation-duration: 1.5s;
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateX(10%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-slideIn {
+    animation: slideIn 0.5s ease-out;
   }
 }

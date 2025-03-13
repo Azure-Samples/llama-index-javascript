@@ -1,44 +1,32 @@
 "use client";
 
+import { ChatSection as ChatSectionUI } from "@llamaindex/chat-ui";
+import "@llamaindex/chat-ui/styles/markdown.css";
+import "@llamaindex/chat-ui/styles/pdf.css";
 import { useChat } from "ai/react";
-import { ChatInput, ChatMessages } from "./ui/chat";
+import CustomChatInput from "./ui/chat/chat-input";
+import CustomChatMessages from "./ui/chat/chat-messages";
+import { useClientConfig } from "./ui/chat/hooks/use-config";
 
 export default function ChatSection() {
-  const {
-    messages,
-    input,
-    isLoading,
-    handleSubmit,
-    handleInputChange,
-    reload,
-    stop,
-  } = useChat({
-    api: process.env.NEXT_PUBLIC_CHAT_API,
-    headers: {
-      "Content-Type": "application/json", // using JSON because of vercel/ai 2.2.26
-    },
+  const { backend } = useClientConfig();
+  const handler = useChat({
+    api: `${backend}/api/chat`,
     onError: (error: unknown) => {
       if (!(error instanceof Error)) throw error;
-      const message = JSON.parse(error.message);
-      alert(message.detail);
+      let errorMessage: string;
+      try {
+        errorMessage = JSON.parse(error.message).detail;
+      } catch (e) {
+        errorMessage = error.message;
+      }
+      alert(errorMessage);
     },
   });
-
   return (
-    <div className="space-y-4 max-w-5xl w-full">
-      <ChatMessages
-        messages={messages}
-        isLoading={isLoading}
-        reload={reload}
-        stop={stop}
-      />
-      <ChatInput
-        input={input}
-        handleSubmit={handleSubmit}
-        handleInputChange={handleInputChange}
-        isLoading={isLoading}
-        multiModal={true}
-      />
-    </div>
+    <ChatSectionUI handler={handler} className="w-full h-full">
+      <CustomChatMessages />
+      <CustomChatInput />
+    </ChatSectionUI>
   );
 }

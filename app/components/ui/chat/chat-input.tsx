@@ -1,84 +1,81 @@
-import { useState } from "react";
-import { Button } from "../button";
-import FileUploader from "../file-uploader";
-import { Input } from "../input";
-import UploadImagePreview from "../upload-image-preview";
-import { ChatHandler } from "./chat.interface";
+"use client";
 
-export default function ChatInput(
-  props: Pick<
-    ChatHandler,
-    | "isLoading"
-    | "input"
-    | "onFileUpload"
-    | "onFileError"
-    | "handleSubmit"
-    | "handleInputChange"
-  > & {
-    multiModal?: boolean;
-  },
-) {
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
+import { ChatInput, useChatUI, useFile } from "@llamaindex/chat-ui";
+import { DocumentInfo, ImagePreview } from "@llamaindex/chat-ui/widgets";
+import { LlamaCloudSelector } from "./custom/llama-cloud-selector";
+import { useClientConfig } from "./hooks/use-config";
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+export default function CustomChatInput() {
+  const { requestData, isLoading, input } = useChatUI();
+  const { backend } = useClientConfig();
+  const {
+    imageUrl,
+    setImageUrl,
+    uploadFile,
+    files,
+    removeDoc,
+    reset,
+    getAnnotations,
+  } = useFile({ uploadAPI: `${backend}/api/chat/upload` });
+
+  /**
+   * Handles file uploads. Overwrite to hook into the file upload behavior.
+   * @param file The file to upload
+   */
+  const handleUploadFile = async (file: File) => {
+    // There's already an image uploaded, only allow one image at a time
     if (imageUrl) {
-      props.handleSubmit(e, {
-        data: { imageUrl: imageUrl },
-      });
-      setImageUrl(null);
+      alert("You can only upload one image at a time.");
       return;
     }
-    props.handleSubmit(e);
-  };
 
-  const onRemovePreviewImage = () => setImageUrl(null);
-
-  const handleUploadImageFile = async (file: File) => {
-    const base64 = await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (error) => reject(error);
-    });
-    setImageUrl(base64);
-  };
-
-  const handleUploadFile = async (file: File) => {
     try {
-      if (props.multiModal && file.type.startsWith("image/")) {
-        return await handleUploadImageFile(file);
-      }
-      props.onFileUpload?.(file);
+      // Upload the file and send with it the current request data
+      await uploadFile(file, requestData);
     } catch (error: any) {
-      props.onFileError?.(error.message);
+      // Show error message if upload fails
+      alert(error.message);
     }
   };
 
+  // Get references to the upload files in message annotations format, see https://github.com/run-llama/chat-ui/blob/main/packages/chat-ui/src/hook/use-file.tsx#L56
+  const annotations = getAnnotations();
+
   return (
-    <form
-      onSubmit={onSubmit}
-      className="rounded-xl bg-white p-4 shadow-xl space-y-4"
+    <ChatInput
+      className="shadow-xl rounded-xl"
+      resetUploadedFiles={reset}
+      annotations={annotations}
     >
-      {imageUrl && (
-        <UploadImagePreview url={imageUrl} onRemove={onRemovePreviewImage} />
-      )}
-      <div className="flex w-full items-start justify-between gap-4 ">
-        <Input
-          autoFocus
-          name="message"
-          placeholder="Type a message"
-          className="flex-1"
-          value={props.input}
-          onChange={props.handleInputChange}
-        />
-        <FileUploader
-          onFileUpload={handleUploadFile}
-          onFileError={props.onFileError}
-        />
-        <Button type="submit" disabled={props.isLoading}>
-          Send message
-        </Button>
+      <div>
+        {/* Image preview section */}
+        {imageUrl && (
+          <ImagePreview url={imageUrl} onRemove={() => setImageUrl(null)} />
+        )}
+        {/* Document previews section */}
+        {files.length > 0 && (
+          <div className="flex gap-4 w-full overflow-auto py-2">
+            {files.map((file) => (
+              <DocumentInfo
+                key={file.id}
+                document={{ url: file.url, sources: [] }}
+                className="mb-2 mt-2"
+                onRemove={() => removeDoc(file)}
+              />
+            ))}
+          </div>
+        )}
       </div>
-    </form>
+      <ChatInput.Form>
+        <ChatInput.Field />
+        <ChatInput.Upload onUpload={handleUploadFile} />
+        <LlamaCloudSelector />
+        <ChatInput.Submit
+          disabled={
+            isLoading || (!input.trim() && files.length === 0 && !imageUrl)
+          }
+        />
+      </ChatInput.Form>
+    </ChatInput>
   );
 }
