@@ -1,6 +1,7 @@
 import { readFile } from "fs/promises";
 import { NextRequest, NextResponse } from "next/server";
 import path from "path";
+import { DATA_DIR } from "../../chat/engine/loader";
 
 /**
  * This API is to get file data from allowed folders
@@ -8,9 +9,9 @@ import path from "path";
  */
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { slug: string[] } },
+  { params }: { params: Promise<{ slug: string[] }> },
 ) {
-  const slug = params.slug;
+  const slug = (await params).slug;
 
   if (!slug) {
     return NextResponse.json({ detail: "Missing file slug" }, { status: 400 });
@@ -20,15 +21,19 @@ export async function GET(
     return NextResponse.json({ detail: "Invalid file path" }, { status: 400 });
   }
 
-  const [folder, ...pathTofile] = params.slug; // data, file.pdf
-  const allowedFolders = ["data", "tool-output"];
+  const [folder, ...pathTofile] = slug; // data, file.pdf
+  const allowedFolders = ["data", "output"];
 
   if (!allowedFolders.includes(folder)) {
     return NextResponse.json({ detail: "No permission" }, { status: 400 });
   }
 
   try {
-    const filePath = path.join(process.cwd(), folder, path.join(...pathTofile));
+    const filePath = path.join(
+      process.cwd(),
+      folder === "data" ? DATA_DIR : folder,
+      path.join(...pathTofile),
+    );
     const blob = await readFile(filePath);
 
     return new NextResponse(blob, {
