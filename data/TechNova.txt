@@ -1,0 +1,12 @@
+Our company, TechNova Inc., was founded in 2015 in Tokyo, Japan. We specialize in AI-powered productivity tools and have over 500 employees worldwide.
+
+TechNova offers a range of employee benefits including:
+- Health insurance
+- Remote work options
+- Annual learning budget of $2000
+- 20 vacation days per year
+
+TechNova's main products include:
+1. NovaWriter - an AI writing assistant
+2. NovaFlow - a productivity dashboard
+3. NovaBot - a chatbot for internal support

@@ -17,7 +17,7 @@ export function setupProvider() {
   
     const azure = {
       azureADTokenProvider,
-      deployment: process.env.AZURE_DEPLOYMENT_NAME ?? "gpt-35-turbo",
+      deployment: process.env.AZURE_DEPLOYMENT_NAME ?? "gpt-4o-mini",
     };
   
     // configure LLM model

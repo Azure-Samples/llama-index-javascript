@@ -28,9 +28,9 @@ var finalOpenAiUrl = empty(openAiUrl) ? 'https://${openAi.outputs.name}.openai.a
 
 var llamaIndexConfig = {
   chat: {
-    model: 'gpt-35-turbo'
-    deployment: 'gpt-35-turbo'
-    version: '1106'
+    model: 'gpt-4o-mini'
+    deployment: 'gpt-4o-mini'
+    version: '2024-07-18'
     capacity: '10'
   }
   embedding: {
@@ -42,10 +42,10 @@ var llamaIndexConfig = {
   model_provider: 'openai'
   openai_api_key: ''
   llm_temperature: '0.7'
-  llm_max_tokens: '100'
+  llm_max_tokens: '8000'
   top_k: '3'
   fileserver_url_prefix: 'http://localhost/api/files'
-  system_prompt: 'You are a helpful assistant who helps users with their questions.'
+  system_prompt: 'You are a professional, friendly, and knowledgeable customer support assistant. Communicate clearly, helpfully, and with empathy. Respond in Burmese if the customer writes in Burmese; otherwise, respond in English. Always maintain a respectful and courteous tone appropriate for high-quality customer service.'
 }
 
 // Tags that should be applied to all resources.

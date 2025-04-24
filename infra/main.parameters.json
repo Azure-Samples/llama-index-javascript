@@ -29,7 +29,7 @@
       "value": "${GITHUB_ACTIONS}"
     },
     "azureDeploymentName": {
-      "value": "${AZURE_DEPLOYMENT_NAME=gpt-35-turbo}"
+      "value": "${AZURE_DEPLOYMENT_NAME=gpt-4o-mini}"
     }
   }
 }
