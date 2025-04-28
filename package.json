@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@apidevtools/swagger-parser": "^10.1.0",
+    "@azure/storage-blob": "^12.14.0",
     "@azure/identity": "^4.5.0",
     "@e2b/code-interpreter": "^1.0.4",
     "@llamaindex/chat-ui": "0.0.14",

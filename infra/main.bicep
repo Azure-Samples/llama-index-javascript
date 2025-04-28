@@ -121,6 +121,15 @@ module appsEnv './shared/apps-env.bicep' = {
   scope: rg
 }
 
+module storage './shared/storage.bicep' = {
+  name: 'storage'
+  scope: rg
+  params: {
+    location: location
+    storageAccountName: '${abbrs.storageStorageAccounts}${resourceToken}'
+  }
+}
+
 module openAi './shared/cognitiveservices.bicep' = if (empty(openAiUrl)) {
   name: 'openai'
   scope: rg
@@ -236,6 +245,14 @@ module llamaIndexNextjs './app/llama-index-nextjs.bicep' = {
           name: 'STORAGE_CACHE_DIR'
           value: './cache'
         }
+        {
+          name: 'AZURE_STORAGE_CONNECTION_STRING'
+          value: storage.outputs.storageAccountConnectionString
+        }
+        {
+          name: 'AZURE_STORAGE_CONTAINER_NAME'
+          value: 'llama-index-data'
+        }
       ]
     })
   }
@@ -263,3 +280,5 @@ output FILESERVER_URL_PREFIX string = llamaIndexConfig.fileserver_url_prefix
 output SYSTEM_PROMPT string = llamaIndexConfig.system_prompt
 output OPENAI_API_TYPE string = 'AzureOpenAI'
 output STORAGE_CACHE_DIR string = './cache'
+output AZURE_STORAGE_CONNECTION_STRING string = storage.outputs.storageAccountConnectionString
+output AZURE_STORAGE_CONTAINER_NAME string = 'llama-index-data'
