@@ -14,29 +14,29 @@ import { downloadFile } from "./file";
 
 const LLAMA_CLOUD_DOWNLOAD_FOLDER = "output/llamacloud";
 
-export function appendSourceData(
-  data: StreamData,
-  sourceNodes?: NodeWithScore<Metadata>[],
-) {
-  if (!sourceNodes?.length) return;
-  try {
-    const nodes = sourceNodes.map((node) => ({
-      metadata: node.node.metadata,
-      id: node.node.id_,
-      score: node.score ?? null,
-      url: getNodeUrl(node.node.metadata),
-      text: node.node.getContent(MetadataMode.NONE),
-    }));
-    data.appendMessageAnnotation({
-      type: "sources",
-      data: {
-        nodes,
-      },
-    });
-  } catch (error) {
-    console.error("Error appending source data:", error);
-  }
-}
+// export function appendSourceData(
+//   data: StreamData,
+//   sourceNodes?: NodeWithScore<Metadata>[],
+// ) {
+//   if (!sourceNodes?.length) return;
+//   try {
+//     const nodes = sourceNodes.map((node) => ({
+//       metadata: node.node.metadata,
+//       id: node.node.id_,
+//       score: node.score ?? null,
+//       url: getNodeUrl(node.node.metadata),
+//       text: node.node.getContent(MetadataMode.NONE),
+//     }));
+//     data.appendMessageAnnotation({
+//       type: "sources",
+//       data: {
+//         nodes,
+//       },
+//     });
+//   } catch (error) {
+//     console.error("Error appending source data:", error);
+//   }
+// }
 
 export function appendEventData(data: StreamData, title?: string) {
   if (!title) return;
@@ -74,7 +74,7 @@ export function createCallbackManager(stream: StreamData) {
 
   callbackManager.on("retrieve-end", (data) => {
     const { nodes, query } = data.detail;
-    appendSourceData(stream, nodes);
+    // appendSourceData(stream, nodes);
     appendEventData(stream, `Retrieving context for query: '${query.query}'`);
     appendEventData(
       stream,
