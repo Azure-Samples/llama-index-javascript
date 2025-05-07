@@ -9,7 +9,6 @@ export async function createChatEngine(documentIds?: string[], params?: any) {
   const tools: BaseToolWithCall[] = [];
 
   // Add a query engine tool if we have a data source
-  // Delete this code if you don't have a data source
   const index = await getDataSource(params);
   if (index) {
     tools.push(createQueryEngineTool(index, { documentIds }));
