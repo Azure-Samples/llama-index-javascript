@@ -253,6 +253,10 @@ module llamaIndexNextjs './app/llama-index-nextjs.bicep' = {
           name: 'AZURE_STORAGE_CONTAINER_NAME'
           value: 'llama-index-data'
         }
+        {
+          name: 'SCRAPER_API_URL'
+          value: 'https://llama-web-scraper.azurewebsites.net/scrape'
+        }
       ]
     })
   }
