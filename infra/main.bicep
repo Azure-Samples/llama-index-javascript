@@ -28,9 +28,9 @@ var finalOpenAiUrl = empty(openAiUrl) ? 'https://${openAi.outputs.name}.openai.a
 
 var llamaIndexConfig = {
   chat: {
-    model: 'gpt-35-turbo'
-    deployment: 'gpt-35-turbo'
-    version: '1106'
+    model: 'gpt-4o-mini'
+    deployment: 'gpt-4o-mini'
+    version: '2024-07-18'
     capacity: '10'
   }
   embedding: {
@@ -42,10 +42,10 @@ var llamaIndexConfig = {
   model_provider: 'openai'
   openai_api_key: ''
   llm_temperature: '0.7'
-  llm_max_tokens: '100'
+  llm_max_tokens: '8000'
   top_k: '3'
   fileserver_url_prefix: 'http://localhost/api/files'
-  system_prompt: 'You are a helpful assistant who helps users with their questions.'
+  system_prompt: 'You are a professional, friendly, and knowledgeable customer support assistant. Communicate clearly, helpfully, and with empathy. Respond in Burmese if the customer writes in Burmese; otherwise, respond in English. Always maintain a respectful and courteous tone appropriate for high-quality customer service.'
 }
 
 // Tags that should be applied to all resources.
@@ -119,6 +119,15 @@ module appsEnv './shared/apps-env.bicep' = {
     logAnalyticsWorkspaceName: monitoring.outputs.logAnalyticsWorkspaceName
   }
   scope: rg
+}
+
+module storage './shared/storage.bicep' = {
+  name: 'storage'
+  scope: rg
+  params: {
+    location: location
+    storageAccountName: '${abbrs.storageStorageAccounts}${resourceToken}'
+  }
 }
 
 module openAi './shared/cognitiveservices.bicep' = if (empty(openAiUrl)) {
@@ -236,6 +245,18 @@ module llamaIndexNextjs './app/llama-index-nextjs.bicep' = {
           name: 'STORAGE_CACHE_DIR'
           value: './cache'
         }
+        {
+          name: 'AZURE_STORAGE_CONNECTION_STRING'
+          value: storage.outputs.storageAccountConnectionString
+        }
+        {
+          name: 'AZURE_STORAGE_CONTAINER_NAME'
+          value: 'llama-index-data'
+        }
+        {
+          name: 'SCRAPER_API_URL'
+          value: 'https://llama-web-scraper.azurewebsites.net/scrape'
+        }
       ]
     })
   }
@@ -263,3 +284,5 @@ output FILESERVER_URL_PREFIX string = llamaIndexConfig.fileserver_url_prefix
 output SYSTEM_PROMPT string = llamaIndexConfig.system_prompt
 output OPENAI_API_TYPE string = 'AzureOpenAI'
 output STORAGE_CACHE_DIR string = './cache'
+output AZURE_STORAGE_CONNECTION_STRING string = storage.outputs.storageAccountConnectionString
+output AZURE_STORAGE_CONTAINER_NAME string = 'llama-index-data'
