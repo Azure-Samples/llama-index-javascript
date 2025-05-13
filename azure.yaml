@@ -10,6 +10,7 @@ services:
         language: js
         docker:
             path: Dockerfile
+            remoteBuild: true
         # hooks:
         #   predeploy:
         #     shell: sh
