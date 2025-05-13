@@ -4,7 +4,13 @@ param location string = resourceGroup().location
 @description('Tags that will be applied to all resources')
 param tags object = {}
 
+@description('The configuration for the LlamaIndex application')
+param llamaIndexConfig object = {}
 
+
+var principalType = isContinuousIntegration ? 'ServicePrincipal' : 'User'
+
+param isContinuousIntegration bool
 param llamaIndexJavascriptExists bool
 
 @description('Id of the user or app to assign application roles')
@@ -100,6 +106,62 @@ module llamaIndexJavascript 'br/public:avm/res/app/container-app:0.8.0' = {
             name: 'PORT'
             value: '3000'
           }
+          {
+            name: 'AZURE_OPENAI_ENDPOINT' 
+            value: openAi.outputs.endpoint
+          }
+          {
+            name: 'AZURE_DEPLOYMENT_NAME' 
+            value: llamaIndexConfig.chat.deployment
+          }
+          {
+            name: 'AZURE_OPENAI_API_VERSION' 
+            value: llamaIndexConfig.openai_api_version
+          }
+          {
+            name: 'MODEL_PROVIDER' 
+            value: llamaIndexConfig.model_provider
+          }
+          {
+            name: 'MODEL' 
+            value: llamaIndexConfig.chat.model
+          }
+          {
+            name: 'EMBEDDING_MODEL' 
+            value: llamaIndexConfig.embedding.model
+          }
+          {
+            name: 'EMBEDDING_DIM' 
+            value: llamaIndexConfig.embedding.dim
+          }
+          {
+            name: 'LLM_TEMPERATURE' 
+            value: llamaIndexConfig.llm_temperature
+          }
+          {
+            name: 'LLM_MAX_TOKENS' 
+            value: llamaIndexConfig.llm_max_tokens
+          }
+          {
+            name: 'TOP_K' 
+            value: llamaIndexConfig.top_k
+          }
+          {
+            name: 'FILESERVER_URL_PREFIX' 
+            value: llamaIndexConfig.fileserver_url_prefix
+          }
+          {
+            name: 'SYSTEM_PROMPT' 
+            value: llamaIndexConfig.system_prompt
+          }
+          {
+            name: 'OPENAI_API_TYPE'
+            value: 'AzureOpenAI'
+          }
+          {
+            name: 'STORAGE_CACHE_DIR'
+            value: './cache'
+          }
         ]
       }
     ]
@@ -118,5 +180,58 @@ module llamaIndexJavascript 'br/public:avm/res/app/container-app:0.8.0' = {
     tags: union(tags, { 'azd-service-name': 'llama-index-javascript' })
   }
 }
+
+module openAi 'br/public:avm/res/cognitive-services/account:0.10.2' =  {
+  name: 'openai'
+  params: {
+    name: '${abbrs.cognitiveServicesAccounts}${resourceToken}'
+    tags: tags
+    location: location
+    kind: 'OpenAI'
+    disableLocalAuth: true
+    customSubDomainName: '${abbrs.cognitiveServicesAccounts}${resourceToken}'
+    publicNetworkAccess: 'Enabled'
+    deployments: [
+      {
+        name: llamaIndexConfig.chat.deployment
+        model: {
+          format: 'OpenAI'
+          name: llamaIndexConfig.chat.model
+          version: llamaIndexConfig.chat.version
+        }
+        sku: {
+          capacity: llamaIndexConfig.chat.capacity
+          name: 'GlobalStandard'
+        }
+      }
+      {
+        name: llamaIndexConfig.embedding.deployment
+        model: {
+          format: 'OpenAI'
+          name: llamaIndexConfig.embedding.model
+          version: llamaIndexConfig.embedding.version
+        }
+        sku: {
+          capacity: llamaIndexConfig.embedding.capacity
+          name: 'Standard'
+        }
+      }
+    ]
+    roleAssignments: [
+      {
+        principalId: principalId
+        principalType: principalType
+        roleDefinitionIdOrName: 'Cognitive Services OpenAI User'
+      }
+      {
+        principalId: llamaIndexJavascriptIdentity.outputs.principalId
+        principalType: 'ServicePrincipal'
+        roleDefinitionIdOrName: 'Cognitive Services OpenAI User'
+      }
+    ]
+  }
+}
+
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerRegistry.outputs.loginServer
 output AZURE_RESOURCE_LLAMA_INDEX_JAVASCRIPT_ID string = llamaIndexJavascript.outputs.resourceId
+output AZURE_OPENAI_ENDPOINT string = openAi.outputs.endpoint

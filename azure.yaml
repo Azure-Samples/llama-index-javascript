@@ -2,7 +2,7 @@
 
 name: llama-index-javascript
 metadata:
-    template: azd-init@1.15.1
+    template: llama-index-javascript@1.15.1
 services:
     llama-index-javascript:
         project: .
