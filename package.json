@@ -18,6 +18,7 @@
     "@apidevtools/swagger-parser": "^10.1.0",
     "@azure/identity": "^4.5.0",
     "@e2b/code-interpreter": "^1.0.4",
+    "@llamaindex/azure": "file:../../@manekinekko/LlamaIndexTS/packages/providers/storage/azure",
     "@llamaindex/chat-ui": "0.0.14",
     "@llamaindex/openai": "^0.1.52",
     "@llamaindex/readers": "^2.0.0",

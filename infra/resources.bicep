@@ -74,110 +74,30 @@ module llamaIndexJavascriptFetchLatestImage './modules/fetch-container-image.bic
   }
 }
 
-module llamaIndexJavascript 'br/public:avm/res/app/container-app:0.8.0' = {
-  name: 'llamaIndexJavascript'
+module llamaIndexJavascriptContainerApp './modules/container-app.bicep' = {
+  name: 'llamaIndexJavascriptContainerApp'
   params: {
     name: 'llama-index-javascript'
-    ingressTargetPort: 3000
-    scaleMinReplicas: 1
-    scaleMaxReplicas: 10
-    secrets: {
-      secureList:  [
-      ]
-    }
-    containers: [
-      {
-        image: llamaIndexJavascriptFetchLatestImage.outputs.?containers[?0].?image ?? 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
-        name: 'main'
-        resources: {
-          cpu: json('0.5')
-          memory: '1.0Gi'
-        }
-        env: [
-          {
-            name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-            value: monitoring.outputs.applicationInsightsConnectionString
-          }
-          {
-            name: 'AZURE_CLIENT_ID'
-            value: llamaIndexJavascriptIdentity.outputs.clientId
-          }
-          {
-            name: 'PORT'
-            value: '3000'
-          }
-          {
-            name: 'AZURE_OPENAI_ENDPOINT' 
-            value: openAi.outputs.endpoint
-          }
-          {
-            name: 'AZURE_DEPLOYMENT_NAME' 
-            value: llamaIndexConfig.chat.deployment
-          }
-          {
-            name: 'AZURE_OPENAI_API_VERSION' 
-            value: llamaIndexConfig.openai_api_version
-          }
-          {
-            name: 'MODEL_PROVIDER' 
-            value: llamaIndexConfig.model_provider
-          }
-          {
-            name: 'MODEL' 
-            value: llamaIndexConfig.chat.model
-          }
-          {
-            name: 'EMBEDDING_MODEL' 
-            value: llamaIndexConfig.embedding.model
-          }
-          {
-            name: 'EMBEDDING_DIM' 
-            value: llamaIndexConfig.embedding.dim
-          }
-          {
-            name: 'LLM_TEMPERATURE' 
-            value: llamaIndexConfig.llm_temperature
-          }
-          {
-            name: 'LLM_MAX_TOKENS' 
-            value: llamaIndexConfig.llm_max_tokens
-          }
-          {
-            name: 'TOP_K' 
-            value: llamaIndexConfig.top_k
-          }
-          {
-            name: 'FILESERVER_URL_PREFIX' 
-            value: llamaIndexConfig.fileserver_url_prefix
-          }
-          {
-            name: 'SYSTEM_PROMPT' 
-            value: llamaIndexConfig.system_prompt
-          }
-          {
-            name: 'OPENAI_API_TYPE'
-            value: 'AzureOpenAI'
-          }
-          {
-            name: 'STORAGE_CACHE_DIR'
-            value: './cache'
-          }
-        ]
-      }
-    ]
-    managedIdentities:{
-      systemAssigned: false
-      userAssignedResourceIds: [llamaIndexJavascriptIdentity.outputs.resourceId]
-    }
-    registries:[
-      {
-        server: containerRegistry.outputs.loginServer
-        identity: llamaIndexJavascriptIdentity.outputs.resourceId
-      }
-    ]
-    environmentResourceId: containerAppsEnvironment.outputs.resourceId
     location: location
     tags: union(tags, { 'azd-service-name': 'llama-index-javascript' })
+    containerImage: llamaIndexJavascriptFetchLatestImage.outputs.?containers[?0].?image ?? 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+    environmentResourceId: containerAppsEnvironment.outputs.resourceId
+    userAssignedIdentityResourceId: llamaIndexJavascriptIdentity.outputs.resourceId
+    userAssignedIdentityClientId: llamaIndexJavascriptIdentity.outputs.clientId
+    containerRegistryLoginServer: containerRegistry.outputs.loginServer
+    appInsightsConnectionString: monitoring.outputs.applicationInsightsConnectionString
+    openAiEndpoint: openAi.outputs.endpoint
+    openAiDeploymentName: llamaIndexConfig.chat.deployment
+    openAiApiVersion: llamaIndexConfig.openai_api_version
+    modelProvider: llamaIndexConfig.model_provider
+    model: llamaIndexConfig.chat.model
+    embeddingModel: llamaIndexConfig.embedding.model
+    embeddingDim: llamaIndexConfig.embedding.dim
+    llmTemperature: llamaIndexConfig.llm_temperature
+    llmMaxTokens: llamaIndexConfig.llm_max_tokens
+    topK: llamaIndexConfig.top_k
+    fileServerUrlPrefix: llamaIndexConfig.fileserver_url_prefix
+    systemPrompt: llamaIndexConfig.system_prompt
   }
 }
 
