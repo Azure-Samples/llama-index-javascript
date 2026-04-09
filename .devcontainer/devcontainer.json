@@ -3,6 +3,7 @@
   "features": {
     "ghcr.io/devcontainers-contrib/features/turborepo-npm:1": {},
     "ghcr.io/azure/azure-dev/azd:latest": {},
+    "ghcr.io/dotnet/aspire-devcontainer-feature/dotnetaspire:1": {},
     "ghcr.io/devcontainers/features/docker-in-docker:1": {
       "version": "20.10.23",
       "moby": "false",
