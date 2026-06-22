@@ -196,6 +196,36 @@ To run the sample, run the following commands, which will start the Next.js app.
 
 Open the URL `http://localhost:3000` in your browser to interact with the Assistant.
 
+## CI/CD configuration (passwordless)
+
+The workflows in `.github/workflows/` authenticate to Azure with **GitHub OIDC + Microsoft Entra ID federated credentials**. They do **not** use a static client secret or an Azure OpenAI API key.
+
+### Required repository variables
+
+Configure these under **Settings → Secrets and variables → Actions → Variables**:
+
+| Variable | Used by | Notes |
+| --- | --- | --- |
+| `AZURE_CLIENT_ID` | both workflows | App registration (service principal) client ID |
+| `AZURE_TENANT_ID` | both workflows | Entra ID tenant ID |
+| `AZURE_SUBSCRIPTION_ID` | both workflows | Target Azure subscription |
+| `AZURE_ENV_NAME` | `azure-dev.yml` | `azd` environment name |
+| `AZURE_LOCATION` | `azure-dev.yml` | Azure region (e.g., `swedencentral`) |
+| `AZURE_OPENAI_ENDPOINT` | `ai-opsec-agent.yml` | Endpoint URL of the Azure OpenAI resource (not a secret) |
+
+### Required Azure-side configuration
+
+1. **Federated credential** on the app registration (`AZURE_CLIENT_ID`) trusting this repo's `main` branch and pull requests. `azd pipeline config` will create this for you.
+2. **Entra ID authentication enabled** on the Azure OpenAI resource (`AZURE_OPENAI_ENDPOINT`).
+3. **Role assignment**: grant the service principal the **Cognitive Services OpenAI User** role on the Azure OpenAI resource so the OpSec workflow can request an access token.
+
+### Secrets that must **not** be set
+
+These are deliberately unused. If they exist in repo settings, delete them:
+
+- `AZURE_CREDENTIALS` (client-secret JSON — replaced by federated credentials)
+- `AZURE_OPENAI_API_KEY` (replaced by an Entra ID access token obtained at runtime)
+
 ## Guidance
 
 ### Region Availability

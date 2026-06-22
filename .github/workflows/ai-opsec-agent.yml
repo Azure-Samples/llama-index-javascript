@@ -16,21 +16,44 @@ on:
 
 
 permissions:
+  id-token: write       # required for OIDC federated login to Azure
   contents: read
-  pull-requests: write # so we can comment on PRs
+  pull-requests: write  # so we can comment on PRs
 
 jobs:
   audit:
     runs-on: ubuntu-latest
     name: "Audit Codebase"
     steps:
-      - name: Checkout code 
+      - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Log in to Azure (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Get Azure OpenAI access token
+        id: aoai-token
+        shell: bash
+        run: |
+          token=$(az account get-access-token \
+            --resource https://cognitiveservices.azure.com \
+            --query accessToken -o tsv)
+          echo "::add-mask::$token"
+          echo "token=$token" >> "$GITHUB_OUTPUT"
+
       - name: Audit Codebase
         uses: Azure-Samples/azure-ai-travel-agents/.github/actions/ai-opsec-agent@main
         with:
-            AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
-            AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+            AZURE_OPENAI_ENDPOINT: ${{ vars.AZURE_OPENAI_ENDPOINT }}
+            # Passwordless: pass an Entra ID access token in place of a static API key.
+            # Azure OpenAI accepts an Entra ID bearer token in the same Authorization header.
+            # The federated service principal (vars.AZURE_CLIENT_ID) must have the
+            # "Cognitive Services OpenAI User" role on the Azure OpenAI resource.
+            AZURE_OPENAI_API_KEY: ${{ steps.aoai-token.outputs.token }}
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             output: security-audit.md
         
