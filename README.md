@@ -225,6 +225,7 @@ These are deliberately unused. If they exist in repo settings, delete them:
 
 - `AZURE_CREDENTIALS` (client-secret JSON — replaced by federated credentials)
 - `AZURE_OPENAI_API_KEY` (replaced by an Entra ID access token obtained at runtime)
+- `AZURE_OPENAI_ENDPOINT` (endpoint URL — should be an Actions variable, not a secret)
 
 ## Guidance
 
