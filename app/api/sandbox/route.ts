@@ -16,6 +16,7 @@
 import { ExecutionError, Result, Sandbox } from "@e2b/code-interpreter";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { checkAuth } from "../auth";
 import { saveDocument } from "../chat/llamaindex/documents/helper";
 
 type CodeArtifact = {
@@ -56,6 +57,9 @@ const SUPPORTED_TEMPLATES = [
 ];
 
 export async function POST(req: Request) {
+  const denied = checkAuth(req.headers);
+  if (denied) return denied;
+
   const { artifact }: { artifact: CodeArtifact } = await req.json();
 
   let sbx: Sandbox;

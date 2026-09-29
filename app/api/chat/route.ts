@@ -2,6 +2,7 @@ import { initObservability } from "@/app/observability";
 import { LlamaIndexAdapter, Message, StreamData } from "ai";
 import { ChatMessage, Settings } from "llamaindex";
 import { NextRequest, NextResponse } from "next/server";
+import { checkAuth } from "../auth";
 import { createChatEngine } from "./engine/chat";
 import { initSettings } from "./engine/settings";
 import {
@@ -19,6 +20,9 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
+  const denied = checkAuth(request.headers);
+  if (denied) return denied;
+
   // Init Vercel AI StreamData and timeout
   const vercelStreamData = new StreamData();
 
