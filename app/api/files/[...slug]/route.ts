@@ -1,6 +1,7 @@
 import { readFile } from "fs/promises";
 import { NextRequest, NextResponse } from "next/server";
 import path from "path";
+import { checkAuth } from "../../auth";
 import { DATA_DIR } from "../../chat/engine/loader";
 
 /**
@@ -8,9 +9,12 @@ import { DATA_DIR } from "../../chat/engine/loader";
  * It receives path slug and response file data like serve static file
  */
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ slug: string[] }> },
 ) {
+  const denied = checkAuth(request.headers);
+  if (denied) return denied;
+
   const slug = (await params).slug;
 
   if (!slug) {

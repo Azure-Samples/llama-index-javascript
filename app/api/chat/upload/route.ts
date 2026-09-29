@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { checkAuth } from "../../auth";
 import { getDataSource } from "../engine";
 import { initSettings } from "../engine/settings";
 import { uploadDocument } from "../llamaindex/documents/upload";
@@ -9,6 +10,9 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
+  const denied = checkAuth(request.headers);
+  if (denied) return denied;
+
   try {
     const {
       name,
